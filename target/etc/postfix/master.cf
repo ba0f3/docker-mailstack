@@ -63,12 +63,6 @@ mailman   unix  -       n       n       -       -       pipe
   flags=FR user=list argv=/usr/lib/mailman/bin/postfix-to-mailman.py
   ${nexthop} ${user}
 
-#
-# SPF configuration
-#
-policyd-spf  unix  -       n       n       -       0       spawn
-    user=policyd-spf argv=/usr/bin/policyd-spf
-
 gpg-mailgate    unix    -   n   n   -   -   pipe
     flags= user=nobody argv=/usr/local/bin/gpg-mailgate.py ${original_recipient}
 

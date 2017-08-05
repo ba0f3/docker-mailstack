@@ -16,6 +16,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
     dovecot-sieve \
     fail2ban \
 	git \
+	iproute2 \
     logwatch \
     postfix \
     redis-server \

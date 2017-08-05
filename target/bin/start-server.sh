@@ -394,7 +394,7 @@ function _setup_dovecot_local_user() {
 	notify 'task' 'Setting up Dovecot Local User'
 	echo -n > /etc/postfix/vmailbox
 	echo -n > /etc/dovecot/userdb
-	if [ -f /tmp/docker-mailstack/postfix-accounts.cf -a "$ENABLE_LDAP" != 1 ]; then
+	if [ -f /tmp/docker-mailstack/postfix-accounts.cf ]; then
 		notify 'inf' "Checking file line endings"
 		sed -i 's/\r//g' /tmp/docker-mailstack/postfix-accounts.cf
 		notify 'inf' "Regenerating postfix user list"
@@ -406,7 +406,6 @@ function _setup_dovecot_local_user() {
 		chown dovecot:dovecot /etc/dovecot/userdb
 		chmod 640 /etc/dovecot/userdb
 
-		sed -i -e '/\!include auth-ldap\.conf\.ext/s/^/#/' /etc/dovecot/conf.d/10-auth.conf
 		sed -i -e '/\!include auth-passwdfile\.inc/s/^#//' /etc/dovecot/conf.d/10-auth.conf
 
 		# Creating users
@@ -467,24 +466,10 @@ function _setup_saslauthd() {
 	notify 'inf' "Configuring Cyrus SASL"
 	# checking env vars and setting defaults
 	[ -z "$SASLAUTHD_MECHANISMS" ] && SASLAUTHD_MECHANISMS=pam
-	[ "$SASLAUTHD_MECHANISMS" = ldap -a -z "$SASLAUTHD_LDAP_SEARCH_BASE" ] && SASLAUTHD_MECHANISMS=pam
-	[ -z "$SASLAUTHD_LDAP_SERVER" ] && SASLAUTHD_LDAP_SERVER=localhost
-	[ -z "$SASLAUTHD_LDAP_FILTER" ] && SASLAUTHD_LDAP_FILTER='(&(uniqueIdentifier=%u)(mailEnabled=TRUE))'
-	([ -z "$SASLAUTHD_LDAP_SSL" ] || [ $SASLAUTHD_LDAP_SSL == 0 ]) && SASLAUTHD_LDAP_PROTO='ldap://' || SASLAUTHD_LDAP_PROTO='ldaps://'
 
 	if [ ! -f /etc/saslauthd.conf ]; then
 		notify 'inf' "Creating /etc/saslauthd.conf"
 		cat > /etc/saslauthd.conf << EOF
-ldap_servers: ${SASLAUTHD_LDAP_PROTO}${SASLAUTHD_LDAP_SERVER}
-
-ldap_auth_method: bind
-ldap_bind_dn: ${SASLAUTHD_LDAP_BIND_DN}
-ldap_bind_pw: ${SASLAUTHD_LDAP_PASSWORD}
-
-ldap_search_base: ${SASLAUTHD_LDAP_SEARCH_BASE}
-ldap_filter: ${SASLAUTHD_LDAP_FILTER}
-
-ldap_referrals: yes
 log_level: 10
 EOF
 	fi
@@ -909,11 +894,6 @@ function _start_daemons_dovecot() {
 	# @TODO fix: on integration test
 	# doveadm: Error: userdb lookup: connect(/var/run/dovecot/auth-userdb) failed: No such file or directory
 	# doveadm: Fatal: user listing failed
-
-	#if [ "$ENABLE_LDAP" != 1 ]; then
-		#echo "Listing users"
-		#/usr/sbin/dovecot user '*'
-	#fi
 }
 
 function _start_daemons_redis() {
