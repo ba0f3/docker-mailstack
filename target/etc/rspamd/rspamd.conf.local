@@ -1,0 +1,14 @@
+metric "default" {
+    actions {
+        reject = 900; # Set higher reject score
+    }
+
+    symbol "MAILLIST" {
+        score = -4.1; # Rewrite score
+    }
+
+    symbol "MY_SYMBOL" {
+        score = 2.1;
+        description = "My new symbol";
+    }
+}
