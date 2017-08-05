@@ -440,6 +440,8 @@ function _setup_dovecot_local_user() {
 	else
 		notify 'inf' "'config/docker-mailserver/postfix-accounts.cf' is not provided. No mail account created."
 	fi
+	postmap /etc/postfix/virtual
+	postmap /etc/postfix/vmailbox
 }
 
 function _setup_postfix_sasl() {

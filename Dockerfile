@@ -19,6 +19,7 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
 	iproute2 \
     logwatch \
     postfix \
+    python \
     redis-server \
     rspamd \
     rsyslog
@@ -32,7 +33,7 @@ RUN git clone --depth=1 https://github.com/rgv151/gpg-mailgate.git /tmp/gpg-mail
   chown -R nobody:nogroup /var/gpgmailgate && \
   chown nobody:nogroup /usr/local/bin/gpg-mailgate.py && \
   chown nobody:nogroup /usr/local/bin/register-handler.py && \
-  mv /tmp/gpg-mailgate/GnuPG /usr/local/lib/python3.5/dist-packages && rm -rf /tmp/gpg-mailgate
+  mv /tmp/gpg-mailgate/GnuPG /usr/local/lib/python2.7/dist-packages && rm -rf /tmp/gpg-mailgate
 RUN echo 'register: "|/usr/local/bin/register-handler.py"' >> /etc/aliases && newaliases
 
 COPY ./target/bin /usr/local/bin
@@ -40,6 +41,8 @@ COPY ./target/etc /etc
 
 # Start-mailserver script
 RUN chmod +x /usr/local/bin/*
+
+RUN openssl dhparam -out /etc/postfix/dhparams.pem 2048
 
 EXPOSE 25 587 993 11334
 VOLUME ["/var/mail", "/var/mail-state"]
