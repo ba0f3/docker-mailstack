@@ -14,7 +14,7 @@ userdb {
 
   # Default fields that can be overridden by passwd-file
   #default_fields = quota_rule=*:storage=1G
-  default_fields = uid=docker gid=docker home=/var/mail/%d/%u
+  default_fields = uid=dovecot gid=dovecot home=/var/mail/%d/%u
 
   # Override fields from passwd-file
   #override_fields = home=/home/virtual/%u

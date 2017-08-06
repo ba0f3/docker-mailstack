@@ -1,1 +1,4 @@
-test@mail.domain.com|{SHA512-CRYPT}$6$GEziBElUFDuq8DeR$XR/Mu.WYSqzfwHDMlQyL.ksdq4vRrDcALO.4zj.RW0Rjr6OifqrMxI09Ee8OJ.Evs91FZMRrdUrdddi2B.y/.1
+test@mail.local|{SHA512-CRYPT}$6$GEziBElUFDuq8DeR$XR/Mu.WYSqzfwHDMlQyL.ksdq4vRrDcALO.4zj.RW0Rjr6OifqrMxI09Ee8OJ.Evs91FZMRrdUrdddi2B.y/.1
+me@mail.local|{SHA512-CRYPT}$6$GEziBElUFDuq8DeR$XR/Mu.WYSqzfwHDMlQyL.ksdq4vRrDcALO.4zj.RW0Rjr6OifqrMxI09Ee8OJ.Evs91FZMRrdUrdddi2B.y/.1
+test1@mail.local|{SHA512-CRYPT}$6$MxrQhRqGmCF0N0qs$Fgln9n983cwy8v8ZqkA24aSSYrHTz4r6IhB16.5XhC8t1PzuA8Xa.ca441bQ6IVCAv2u5MD9CIFTyXdGSvw/E0
+bob@mail.local|{SHA512-CRYPT}$6$RO0NnFAoFtmjeq91$1KHCyuGFpZ/uJ8VcYNVQT6rujnnw09CT5rbaROsA8IZlTl4J.naqn1GmUGMJPIu46aJtWkbhH/w50L6bJ1aDL.

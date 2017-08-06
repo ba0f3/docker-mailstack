@@ -440,7 +440,6 @@ function _setup_dovecot_local_user() {
 	else
 		notify 'inf' "'config/docker-mailserver/postfix-accounts.cf' is not provided. No mail account created."
 	fi
-	postmap /etc/postfix/virtual
 	postmap /etc/postfix/vmailbox
 }
 
@@ -517,6 +516,8 @@ function _setup_postfix_aliases() {
 			# if they are equal it means the line looks like: "user1     other@domain.tld"
 			test "$uname" != "$domain" && echo ${domain} >> /tmp/vhost.tmp
 		done < /tmp/docker-mailstack/postfix-virtual.cf
+		postmap /etc/postfix/virtual
+
 	else
 		notify 'inf' "Warning 'config/postfix-virtual.cf' is not provided. No mail alias/forward created."
 	fi
@@ -528,6 +529,7 @@ function _setup_postfix_aliases() {
 		s/ regexp:.*//
 		s/$/ regexp:\/etc\/postfix\/regexp/
 		}' /etc/postfix/main.cf
+		postmap /etc/postfix/regexp
 	fi
 }
 
@@ -665,8 +667,6 @@ function _setup_docker_permit() {
 		* )
 			notify 'inf' "Adding container ip in my networks"
 			postconf -e "$(postconf | grep '^mynetworks =') $container_ip/32"
-			echo $container_ip/32 >> /etc/opendmarc/ignore.hosts
-			echo $container_ip/32 >> /etc/opendkim/TrustedHosts
 			;;
 	esac
 }

@@ -13,13 +13,17 @@ RUN echo "deb-src http://rspamd.com/apt-stable/ stretch main" >> /etc/apt/source
 RUN apt-get update && apt-get -y --no-install-recommends install \
 	cron \
     dovecot-imapd \
+    dovecot-lmtpd \
+    dovecot-managesieved \
     dovecot-sieve \
     fail2ban \
 	git \
 	iproute2 \
+	libssl-dev \
     logwatch \
     postfix \
     python \
+    python-m2crypto \
     redis-server \
     rspamd \
     rsyslog
@@ -36,13 +40,29 @@ RUN git clone --depth=1 https://github.com/rgv151/gpg-mailgate.git /tmp/gpg-mail
   mv /tmp/gpg-mailgate/GnuPG /usr/local/lib/python2.7/dist-packages && rm -rf /tmp/gpg-mailgate
 RUN echo 'register: "|/usr/local/bin/register-handler.py"' >> /etc/aliases && newaliases
 
+RUN apt-get -y --purge remove \
+	git \
+	libssl-dev \
+	&& apt-get autoremove -y --purge && apt-get clean
+ 
+RUN openssl dhparam -out /etc/postfix/dhparams.pem 2048
+
+# Configures Dovecot
+RUN sed -i -e 's/include_try \/usr\/share\/dovecot\/protocols\.d/include_try \/etc\/dovecot\/protocols\.d/g' /etc/dovecot/dovecot.conf
+RUN sed -i -e 's/#mail_plugins = \$mail_plugins/mail_plugins = \$mail_plugins sieve/g' /etc/dovecot/conf.d/15-lda.conf
+RUN sed -i -e 's/^.*lda_mailbox_autocreate.*/lda_mailbox_autocreate = yes/g' /etc/dovecot/conf.d/15-lda.conf
+RUN sed -i -e 's/^.*lda_mailbox_autosubscribe.*/lda_mailbox_autosubscribe = yes/g' /etc/dovecot/conf.d/15-lda.conf
+RUN sed -i -e 's/^.*postmaster_address.*/postmaster_address = '${POSTMASTER_ADDRESS:="postmaster@domain.com"}'/g' /etc/dovecot/conf.d/15-lda.conf
+RUN sed -i 's/#imap_idle_notify_interval = 2 mins/imap_idle_notify_interval = 29 mins/' /etc/dovecot/conf.d/20-imap.conf
+RUN cd /usr/share/dovecot && ./mkcert.sh
+RUN mkdir /usr/lib/dovecot/sieve-pipe && chmod 755 /usr/lib/dovecot/sieve-pipe
+RUN mkdir /usr/lib/dovecot/sieve-filter && chmod 755 /usr/lib/dovecot/sieve-filter
+
 COPY ./target/bin /usr/local/bin
 COPY ./target/etc /etc
 
-# Start-mailserver script
+# Helper scripts
 RUN chmod +x /usr/local/bin/*
-
-RUN openssl dhparam -out /etc/postfix/dhparams.pem 2048
 
 EXPOSE 25 587 993 11334
 VOLUME ["/var/mail", "/var/mail-state"]

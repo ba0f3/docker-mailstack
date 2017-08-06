@@ -6,7 +6,7 @@ services:
     image: mail
     #build: .
     hostname: mail
-    domainname: domain.com
+    domainname: mail.local
     container_name: mail
     ports:
     - "25:25"
@@ -14,8 +14,8 @@ services:
     - "993:993"
     - "11334:11334"
     volumes:
-    - maildata:/var/mail
-    - mailstate:/var/mail-state
+    - ./data/mail:/var/mail
+    - ./data/mail-state:/var/mail-state
     - ./config/:/tmp/docker-mailstack/
     environment:
     - ENABLE_FAIL2BAN=1
