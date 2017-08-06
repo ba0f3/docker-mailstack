@@ -6,9 +6,4 @@ metric "default" {
     symbol "MAILLIST" {
         score = -4.1; # Rewrite score
     }
-
-    symbol "MY_SYMBOL" {
-        score = 2.1;
-        description = "My new symbol";
-    }
 }
