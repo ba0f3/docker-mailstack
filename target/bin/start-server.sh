@@ -91,6 +91,7 @@ function register_functions() {
 	fi
 
     _register_setup_function "_setup_environment"
+    _register_setup_function "_setup_dkim"
 
 	################### << setup funcs
 
@@ -747,6 +748,20 @@ function _setup_environment() {
     if ! grep -q "$banner" /etc/environment; then
         echo $banner >> /etc/environment
     fi
+}
+
+function _setup_dkim() {
+	notify 'task' 'Generating DKIM keypair if missing'
+	mkdir -p /var/lib/rspamd/dkim
+	while read -r domain; do
+		if [ ! -f /var/lib/rspamd/dkim/$domain.dkim.key ]; then
+			rspamadm dkim_keygen -b 4096 -d $domain -s 'mail' -k /var/lib/rspamd/dkim/$domain.dkim.key > /var/lib/rspamd/dkim/$domain.dkim.txt
+			notify 'inf' "Private key for domain '$domain' is generated, here is sample DNS record:"
+			cat /var/lib/rspamd/dkim/$domain.dkim.txt
+		else
+			notify 'inf' "Private key for domain '$DOMAINNAME' exists, nothing to do."
+		fi 
+	done < /etc/postfix/vhost
 }
 
 ##########################################################################
