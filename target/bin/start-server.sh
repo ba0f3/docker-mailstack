@@ -535,7 +535,7 @@ function _setup_postfix_aliases() {
 }
 
 function _setup_ssl() {
-	notify 'task' 'Setting up SSL'
+	notify 'task' "Setting up SSL [$SSL_TYPE for $HOSTNAME]"
 
 	# SSL Configuration
 	case $SSL_TYPE in
@@ -604,35 +604,35 @@ function _setup_ssl() {
 			notify 'inf' "SSL configured with 'Manual' certificates"
 		fi
 	;;
-"self-signed" )
-	# Adding self-signed SSL certificate if provided in 'postfix/ssl' folder
-	if [ -e "/tmp/docker-mailstack/ssl/$HOSTNAME-cert.pem" ] \
-	&& [ -e "/tmp/docker-mailstack/ssl/$HOSTNAME-key.pem"  ] \
-	&& [ -e "/tmp/docker-mailstack/ssl/$HOSTNAME-combined.pem" ] \
-	&& [ -e "/tmp/docker-mailstack/ssl/demoCA/cacert.pem" ]; then
-		notify 'inf' "Adding $HOSTNAME SSL certificate"
-		mkdir -p /etc/postfix/ssl
-		cp "/tmp/docker-mailstack/ssl/$HOSTNAME-cert.pem" /etc/postfix/ssl
-		cp "/tmp/docker-mailstack/ssl/$HOSTNAME-key.pem" /etc/postfix/ssl
-		# Force permission on key file
-		chmod 600 /etc/postfix/ssl/$HOSTNAME-key.pem
-		cp "/tmp/docker-mailstack/ssl/$HOSTNAME-combined.pem" /etc/postfix/ssl
-		cp /tmp/docker-mailstack/ssl/demoCA/cacert.pem /etc/postfix/ssl
+	"self-signed" )
+		# Adding self-signed SSL certificate if provided in 'postfix/ssl' folder
+		if [ -e "/tmp/docker-mailstack/ssl/$HOSTNAME-cert.pem" ] \
+		&& [ -e "/tmp/docker-mailstack/ssl/$HOSTNAME-key.pem"  ] \
+		&& [ -e "/tmp/docker-mailstack/ssl/$HOSTNAME-combined.pem" ] \
+		&& [ -e "/tmp/docker-mailstack/ssl/demoCA/cacert.pem" ]; then
+			notify 'inf' "Adding $HOSTNAME SSL certificate"
+			mkdir -p /etc/postfix/ssl
+			cp "/tmp/docker-mailstack/ssl/$HOSTNAME-cert.pem" /etc/postfix/ssl
+			cp "/tmp/docker-mailstack/ssl/$HOSTNAME-key.pem" /etc/postfix/ssl
+			# Force permission on key file
+			chmod 600 /etc/postfix/ssl/$HOSTNAME-key.pem
+			cp "/tmp/docker-mailstack/ssl/$HOSTNAME-combined.pem" /etc/postfix/ssl
+			cp /tmp/docker-mailstack/ssl/demoCA/cacert.pem /etc/postfix/ssl
 
-		# Postfix configuration
-		sed -i -r 's~smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem~smtpd_tls_cert_file=/etc/postfix/ssl/'$HOSTNAME'-cert.pem~g' /etc/postfix/main.cf
-		sed -i -r 's~smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key~smtpd_tls_key_file=/etc/postfix/ssl/'$HOSTNAME'-key.pem~g' /etc/postfix/main.cf
-		sed -i -r 's~#smtpd_tls_CAfile=~smtpd_tls_CAfile=/etc/postfix/ssl/cacert.pem~g' /etc/postfix/main.cf
-		sed -i -r 's~#smtp_tls_CAfile=~smtp_tls_CAfile=/etc/postfix/ssl/cacert.pem~g' /etc/postfix/main.cf
-		ln -s /etc/postfix/ssl/cacert.pem "/etc/ssl/certs/cacert-$HOSTNAME.pem"
+			# Postfix configuration
+			sed -i -r 's~smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem~smtpd_tls_cert_file=/etc/postfix/ssl/'$HOSTNAME'-cert.pem~g' /etc/postfix/main.cf
+			sed -i -r 's~smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key~smtpd_tls_key_file=/etc/postfix/ssl/'$HOSTNAME'-key.pem~g' /etc/postfix/main.cf
+			sed -i -r 's~#smtpd_tls_CAfile=~smtpd_tls_CAfile=/etc/postfix/ssl/cacert.pem~g' /etc/postfix/main.cf
+			sed -i -r 's~#smtp_tls_CAfile=~smtp_tls_CAfile=/etc/postfix/ssl/cacert.pem~g' /etc/postfix/main.cf
+			ln -s /etc/postfix/ssl/cacert.pem "/etc/ssl/certs/cacert-$HOSTNAME.pem"
 
-		# Dovecot configuration
-		sed -i -e 's~ssl_cert = </etc/dovecot/dovecot\.pem~ssl_cert = </etc/postfix/ssl/'$HOSTNAME'-combined\.pem~g' /etc/dovecot/conf.d/10-ssl.conf
-		sed -i -e 's~ssl_key = </etc/dovecot/private/dovecot\.pem~ssl_key = </etc/postfix/ssl/'$HOSTNAME'-key\.pem~g' /etc/dovecot/conf.d/10-ssl.conf
+			# Dovecot configuration
+			sed -i -e 's~ssl_cert = </etc/dovecot/dovecot\.pem~ssl_cert = </etc/postfix/ssl/'$HOSTNAME'-combined\.pem~g' /etc/dovecot/conf.d/10-ssl.conf
+			sed -i -e 's~ssl_key = </etc/dovecot/private/dovecot\.pem~ssl_key = </etc/postfix/ssl/'$HOSTNAME'-key\.pem~g' /etc/dovecot/conf.d/10-ssl.conf
 
-		notify 'inf' "SSL configured with 'self-signed' certificates"
-	fi
-	;;
+			notify 'inf' "SSL configured with 'self-signed' certificates"
+		fi
+		;;
 	esac
 }
 
