@@ -1,4 +1,4 @@
-FROM debian:jessie-slim
+FROM debian:jessie
 MAINTAINER Huy Doan <me@huy.im>
 
 ENV DEBIAN_FRONTEND noninteractive

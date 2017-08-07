@@ -1,5 +1,5 @@
 #!/bin/bash
-#echo 1 > /proc/sys/vm/overcommit_memory
+echo 1 > /proc/sys/vm/overcommit_memory
 
 ##########################################################################
 # >> DEFAULT VARS
