@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM redis
 MAINTAINER Huy Doan <me@huy.im>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -24,7 +24,6 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
     postfix \
     python \
     python-m2crypto \
-    redis-server \
     rspamd \
     rsyslog
 
@@ -63,6 +62,7 @@ COPY ./target/etc /etc
 
 # Helper scripts
 RUN chmod +x /usr/local/bin/*
+RUN sysctl vm.overcommit_memory=1
 
 EXPOSE 25 587 993 11334
 VOLUME ["/var/mail", "/var/mail-state"]
