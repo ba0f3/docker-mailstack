@@ -914,7 +914,8 @@ function _start_daemons_dovecot() {
 
 function _start_daemons_redis() {
 	notify 'task' 'Starting redis' 'n'
-	display_startup_daemon "/etc/init.d/redis-server start"
+	mkdir -p /var/lib/redis
+	display_startup_daemon "redis-server /etc/redis/redis.conf"
 }
 
 function _start_daemons_rspamd() {

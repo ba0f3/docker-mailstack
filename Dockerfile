@@ -62,7 +62,6 @@ COPY ./target/etc /etc
 
 # Helper scripts
 RUN chmod +x /usr/local/bin/*
-RUN sysctl vm.overcommit_memory=1
 
 EXPOSE 25 587 993 11334
 VOLUME ["/var/mail", "/var/mail-state"]
