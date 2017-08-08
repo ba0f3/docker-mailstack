@@ -5,21 +5,22 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV ONE_DIR=0
 
 # Packages
-RUN apt-get update && apt-get dist-upgrade -y
-RUN apt-get install -y wget gnupg2
+RUN apt-get update -q && apt-get dist-upgrade -y -q
+RUN apt-get install -y -q wget gnupg2
 RUN wget -O- https://rspamd.com/apt-stable/gpg.key | apt-key add -
 RUN echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list
 RUN echo "deb-src http://rspamd.com/apt-stable/ jessie main" >> /etc/apt/sources.list.d/rspamd.list
-RUN apt-get update && apt-get -y --no-install-recommends install \
-	cron \
+RUN apt-get -q update && apt-get -y -q --no-install-recommends install \
+    cron \
+    dovecot-antispam \
     dovecot-imapd \
     dovecot-lmtpd \
     dovecot-managesieved \
     dovecot-sieve \
     fail2ban \
-	git \
-	iproute2 \
-	libssl-dev \
+    git \
+    iproute2 \
+    libssl-dev \
     logwatch \
     postfix \
     python \

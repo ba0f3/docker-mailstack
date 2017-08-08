@@ -18,6 +18,7 @@ services:
     - ./data/mail-state:/var/mail-state
     - ./config/:/tmp/docker-mailstack/
     environment:
+    - RSPAMD_PASSWD=s3cret
     - ENABLE_FAIL2BAN=1
     - ONE_DIR=1
     - DMS_DEBUG=1

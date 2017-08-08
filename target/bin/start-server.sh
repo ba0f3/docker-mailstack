@@ -7,6 +7,7 @@
 # Example: DEFAULT_VARS["KEY"]="VALUE"
 ##########################################################################
 declare -A DEFAULT_VARS
+DEFAULT_VARS["RSPAMD_PASSWD"]="${RSPAMD_PASSWD:="s3cret"}"
 DEFAULT_VARS["ENABLE_FAIL2BAN"]="${ENABLE_FAIL2BAN:="0"}"
 DEFAULT_VARS["ENABLE_MANAGESIEVE"]="${ENABLE_MANAGESIEVE:="0"}"
 DEFAULT_VARS["ENABLE_SASLAUTHD"]="${ENABLE_SASLAUTHD:="0"}"
@@ -89,8 +90,10 @@ function register_functions() {
 		_register_setup_function "_setup_postfix_virtual_transport"
 	fi
 
-    _register_setup_function "_setup_environment"
-    _register_setup_function "_setup_dkim"
+  _register_setup_function "_setup_environment"
+  _register_setup_function "_setup_rspamd     "
+  _register_setup_function "_setup_dkim"
+
 
 	################### << setup funcs
 
@@ -374,6 +377,9 @@ function _setup_dovecot() {
 		notify 'inf' "Sieve management enabled"
 		mv /etc/dovecot/protocols.d/managesieved.protocol.disab /etc/dovecot/protocols.d/managesieved.protocol
 	fi
+
+  notify 'inf' 'Compiling sieve scripts in /etc/dovecot/sieve/before.d'
+  /usr/bin/sievec /etc/dovecot/sieve/before.d
 
 	# Copy pipe and filter programs, if any
 	rm -f /usr/lib/dovecot/sieve-filter/*
@@ -747,6 +753,13 @@ function _setup_environment() {
     if ! grep -q "$banner" /etc/environment; then
         echo $banner >> /etc/environment
     fi
+}
+
+function _setup_rspamd_password() {
+    notify 'task', 'Setting up Rspamd password'
+    hash=`/usr/bin/rspamadm pw -p $RSPAMD_PASSWD`
+    sed -i 's/q1/$hash/g' /etc/rspamd/local.d/worker-controller.inc
+    sed -i 's/q1/$RSPAMD_PASSWD/g' /etc/dovecot/conf.d/90-plugin.conf
 }
 
 function _setup_dkim() {
