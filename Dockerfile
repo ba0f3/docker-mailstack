@@ -5,11 +5,11 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV ONE_DIR=0
 
 # Packages
-RUN apt-get update -q && apt-get dist-upgrade -y -q
-RUN apt-get install -y -q wget gnupg2
+RUN apt-get update -q && apt-get dist-upgrade -y -q && apt-get install -y -q wget gnupg2
+RUN echo 'deb http://deb.debian.org/debian jessie-backports main' > /etc/apt/sources.list.d/backports.list
 RUN wget -O- https://rspamd.com/apt-stable/gpg.key | apt-key add -
-RUN echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list
-RUN echo "deb-src http://rspamd.com/apt-stable/ jessie main" >> /etc/apt/sources.list.d/rspamd.list
+RUN echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list && \
+    echo "deb-src http://rspamd.com/apt-stable/ jessie main" >> /etc/apt/sources.list.d/rspamd.list
 RUN apt-get -q update && apt-get -y -q --no-install-recommends install \
     cron \
     dovecot-antispam \
