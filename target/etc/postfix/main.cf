@@ -66,8 +66,9 @@ content_filter = gpg-mailgate:[127.0.0.1]:10028
 
 # Milters used by DKIM
 milter_protocol = 6
-milter_default_action = accept
-smtpd_milters = inet:localhost:11332
+milter_default_action = quarantine
 milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
+smtpd_milters = inet:localhost:11332
+non_smtpd_milters = inet:localhost:11332
 
 disable_vrfy_command = yes
