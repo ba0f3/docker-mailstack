@@ -750,6 +750,9 @@ function _setup_environment() {
     if ! grep -q "$banner" /etc/environment; then
         echo $banner >> /etc/environment
     fi
+
+    mkdir -p /var/mail-state/gpg-mailgate
+    usermod -d /var/mail-state/gpg-mailgate nobody
 }
 
 function _setup_rspamd_passwd() {

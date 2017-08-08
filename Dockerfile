@@ -31,8 +31,8 @@ RUN apt-get -q update && apt-get -y -q --no-install-recommends install \
     rsyslog
 
 # Configure GPG-Mailgate
-RUN mkdir -p /var/mail-state/gpg-mailgate && chown nobody /var/mail-state/gpg-mailgate && \
-    mkdir -p /var/gpgmailgate/smime && usermod -d /var/mail-state/gpg-mailgate nobody
+RUN chown nobody /var/mail-state/gpg-mailgate && \
+    mkdir -p /var/gpgmailgate/smime
 
 RUN git clone --depth=1 https://github.com/rgv151/gpg-mailgate.git /tmp/gpg-mailgate && \
   mv /tmp/gpg-mailgate/gpg-mailgate.py /tmp/gpg-mailgate/register-handler.py /usr/local/bin/ && \
