@@ -91,7 +91,7 @@ function register_functions() {
 	fi
 
   _register_setup_function "_setup_environment"
-  _register_setup_function "_setup_rspamd     "
+  _register_setup_function "_setup_rspamd_passwd"
   _register_setup_function "_setup_dkim"
 
 
@@ -378,7 +378,8 @@ function _setup_dovecot() {
 		mv /etc/dovecot/protocols.d/managesieved.protocol.disab /etc/dovecot/protocols.d/managesieved.protocol
 	fi
 
-  notify 'inf' 'Compiling sieve scripts in /etc/dovecot/sieve/before.d'
+  notify 'inf' 'Compiling sieve scripts'
+  /usr/bin/sievec /etc/dovecot/sieve
   /usr/bin/sievec /etc/dovecot/sieve/before.d
 
 	# Copy pipe and filter programs, if any
@@ -659,15 +660,11 @@ function _setup_docker_permit() {
 		"host" )
 			notify 'inf' "Adding $container_network/16 to my networks"
 			postconf -e "$(postconf | grep '^mynetworks =') $container_network/16"
-			echo $container_network/16 >> /etc/opendmarc/ignore.hosts
-			echo $container_network/16 >> /etc/opendkim/TrustedHosts
 			;;
 
 		"network" )
 			notify 'inf' "Adding docker network in my networks"
 			postconf -e "$(postconf | grep '^mynetworks =') 172.16.0.0/12"
-			echo 172.16.0.0/12 >> /etc/opendmarc/ignore.hosts
-			echo 172.16.0.0/12 >> /etc/opendkim/TrustedHosts
 			;;
 
 		* )
@@ -755,11 +752,10 @@ function _setup_environment() {
     fi
 }
 
-function _setup_rspamd_password() {
+function _setup_rspamd_passwd() {
     notify 'task', 'Setting up Rspamd password'
-    hash=`/usr/bin/rspamadm pw -p $RSPAMD_PASSWD`
-    sed -i 's/q1/$hash/g' /etc/rspamd/local.d/worker-controller.inc
-    sed -i 's/q1/$RSPAMD_PASSWD/g' /etc/dovecot/conf.d/90-plugin.conf
+    HASH=`/usr/bin/rspamadm pw -p $RSPAMD_PASSWD`
+    sed -i "s/q1/$HASH/g" /etc/rspamd/local.d/worker-controller.inc
 }
 
 function _setup_dkim() {
@@ -768,7 +764,7 @@ function _setup_dkim() {
 	while read -r domain; do
 		if [ ! -f /var/lib/rspamd/dkim/$domain.dkim.key ]; then
 			rspamadm dkim_keygen -b 2048 -d $domain -s 'mail' -k /var/lib/rspamd/dkim/$domain.dkim.key > /var/lib/rspamd/dkim/$domain.dkim.txt
-			notify 'inf' "Private key for domain '$domain' is generated, here is sample DNS record:"
+			notify 'inf' "Private key for domain '$domain' is generated, here is DNS record:"
 			cat /var/lib/rspamd/dkim/$domain.dkim.txt
 		else
 			notify 'inf' "Private key for domain '$DOMAINNAME' exists, nothing to do."
