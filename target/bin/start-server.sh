@@ -752,6 +752,7 @@ function _setup_environment() {
     fi
 
     mkdir -p /var/mail-state/gpg-mailgate
+    chown nobody /var/mail-state/gpg-mailgate
     usermod -d /var/mail-state/gpg-mailgate nobody
 }
 
