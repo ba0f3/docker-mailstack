@@ -389,9 +389,9 @@ function _setup_dovecot() {
   notify 'inf' 'Compiling sieve scripts'
   /usr/bin/sievec /usr/lib/dovecot/sieve-filter
   /usr/bin/sievec /usr/lib/dovecot/sieve-pipe
-  chown dovecot:dovecot /usr/lib/dovecot/sieve-filter/*
+  chown 5000:5000 /usr/lib/dovecot/sieve-filter/*
 	chmod 550 /usr/lib/dovecot/sieve-filter/*
-  chown dovecot:dovecot /usr/lib/dovecot/sieve-pipe/*
+  chown 5000:5000 /usr/lib/dovecot/sieve-pipe/*
 	chmod 550 /usr/lib/dovecot/sieve-pipe/*
 
 }
