@@ -14,7 +14,6 @@ RUN echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list
     echo "deb-src http://rspamd.com/apt-stable/ jessie main" >> /etc/apt/sources.list.d/rspamd.list
 RUN apt-get -q update && apt-get -y -q --no-install-recommends install \
     cron \
-    dovecot-antispam \
     dovecot-imapd \
     dovecot-lmtpd \
     dovecot-managesieved \
