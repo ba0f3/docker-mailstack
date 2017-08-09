@@ -14,8 +14,8 @@ services:
     - "993:993"
     - "11334:11334"
     volumes:
-    - maildata:/var/mail
-    - mailstate:/var/mail-state
+    - /tmp/maildata:/var/mail
+    - /tmp/mailstate:/var/mail-state
     - ./config/:/tmp/docker-mailstack/
     environment:
     - RSPAMD_PASSWD=s3cret

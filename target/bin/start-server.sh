@@ -771,8 +771,7 @@ function _setup_dkim() {
     KEY_FILE=/var/lib/rspamd/dkim/$domain.dkim.key
 		if [ ! -f $KEY_FILE ]; then
 			rspamadm dkim_keygen -b 2048 -d $domain -s 'mail' -k $KEY_FILE > /var/lib/rspamd/dkim/$domain.dkim.txt
-			notify 'inf' "Private key for domain '$domain' is generated, here is DNS record:"
-			cat /var/lib/rspamd/dkim/$domain.dkim.txt
+			notify 'inf' "Private key for domain '$domain' is generated"			
 		else
 			notify 'inf' "Private key for domain '$DOMAINNAME' exists, nothing to do."
 		fi 
