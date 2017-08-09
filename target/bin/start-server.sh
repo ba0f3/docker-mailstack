@@ -760,6 +760,8 @@ function _setup_rspamd_passwd() {
     notify 'task', 'Setting up Rspamd password'
     HASH=`/usr/bin/rspamadm pw -p $RSPAMD_PASSWD`
     sed -i "s/q1/$HASH/g" /etc/rspamd/local.d/worker-controller.inc
+    sed -i "s/q1/$RSPAMD_PASSWD/g" /etc/dovecot/conf.d/90-plugin.conf
+    unset RSPAMD_PASSWD
 }
 
 function _setup_dkim() {
