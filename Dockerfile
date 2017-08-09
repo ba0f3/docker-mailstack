@@ -6,8 +6,10 @@ ENV ONE_DIR=0
 
 # Packages
 RUN apt-get update -q && apt-get dist-upgrade -y -q && apt-get install -y -q wget gnupg2
-RUN echo 'deb http://deb.debian.org/debian jessie-backports main' > /etc/apt/sources.list.d/backports.list
+RUN echo 'deb http://xi.dovecot.fi/debian/ stable-auto/dovecot-2.2 main' > /etc/apt/sources.list.d/dovecot.list && \
+    echo 'deb-src http://xi.dovecot.fi/debian/ stable-auto/dovecot-2.2 main' >> /etc/apt/sources.list.d/dovecot.list
 RUN wget -O- https://rspamd.com/apt-stable/gpg.key | apt-key add -
+RUN wget -O - http://xi.dovecot.fi/debian/archive.key | apt-key add -
 RUN echo "deb http://rspamd.com/apt-stable/ jessie main" > /etc/apt/sources.list.d/rspamd.list && \
     echo "deb-src http://rspamd.com/apt-stable/ jessie main" >> /etc/apt/sources.list.d/rspamd.list
 RUN apt-get -q update && apt-get -y -q --no-install-recommends install \
@@ -62,6 +64,7 @@ RUN mkdir /usr/lib/dovecot/sieve-filter && chmod 755 /usr/lib/dovecot/sieve-filt
 
 COPY ./target/bin /usr/local/bin
 COPY ./target/etc /etc
+COPY ./target/usr /usr
 
 # Helper scripts
 RUN chmod +x /usr/local/bin/*

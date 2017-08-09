@@ -1,1 +1,2 @@
 - Skip Rspamd from re-scanning mails encrypted by GPG Mailgate
+- Setup spamtrap
